@@ -1,0 +1,612 @@
+openapi: 3.0.3
+
+info:
+  title: Social network API
+  description: This API describes interaction with Social Network for tourists
+  version: 0.1.0
+
+tags:
+  - name: Users
+  - name: Posts
+  - name: Comments
+  - name: Reactions
+  - name: Photos
+  - name: Locations
+
+paths:
+  /users:
+    post:
+      tags:
+        - Users
+      summary: Create user
+      description: Method creates new user
+      requestBody:
+        description: Create new user
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/User'
+        required: true
+      responses:
+        201:
+          description: User created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Bad request
+        422:
+          description: Not valid request
+        500:
+          description: Internal server error
+
+  /users/{user_id}:
+    get:
+      tags:
+        - Users
+      summary: Get user
+      description: Method returns user info
+      parameters:
+        - name: user_id
+          in: path
+          description: User id
+          required: true
+          schema:
+            type: string
+            default: uuid
+            example: "586fcad8-fbb2-4cf9-ba5d-ca04ee2e65f2"
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        400:
+          description: Bad request
+        500:
+          description: Internal server error
+
+
+  /users/{user_id}/subscription:
+    post:
+      tags:
+        - Users
+      summary: Create subscription
+      description: Subscribe to user by user_id
+      parameters:
+        - name: user_id
+          in: path
+          description: User id
+          required: true
+          schema:
+            type: string
+            default: uuid
+            example: "586fcad8-fbb2-4cf9-ba5d-ca04ee2e65f2"
+      responses:
+        201:
+          description: Subscribed
+        404:
+          description: User not found
+        500:
+          description: Internal server error
+    delete:
+      tags:
+        - Users
+      summary: Delete subscription
+      description: Unsubscribe user by user_id
+      parameters:
+        - name: user_id
+          in: path
+          description: User id
+          required: true
+          schema:
+            type: string
+            default: uuid
+            example: "586fcad8-fbb2-4cf9-ba5d-ca04ee2e65f2"
+      responses:
+        200:
+          description: Unsubscribed
+        404:
+          description: User not found
+        500:
+          description: Internal server error
+
+  /posts:
+    get:
+      tags:
+        - Posts
+      summary: Get posts
+      description: Method returns posts based on user subscriptions
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          description: Amount of posts on one page
+          required: true
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        400:
+          description: Bad request
+        500:
+          description: Internal server error
+    post:
+      tags:
+        - Posts
+      summary: Create post
+      description: Method creates post
+      requestBody:
+        description: Create new post
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Post'
+        required: true
+      responses:
+        201:
+          description: Post created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        400:
+          description: Bad request
+        422:
+          description: Not valid request
+        500:
+          description: Internal server error
+
+  /posts/{post_id}:
+    get:
+      tags:
+        - Posts
+      summary: Get post
+      description: Method returns post
+      parameters:
+        - name: post_id
+          in: path
+          description: Post id
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: "21812f1c-7fbd-408f-9622-2c84bda921ca"
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Post'
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+
+  /locations:
+    get:
+      tags:
+        - Locations
+      summary: Get popular locations
+      description: Method returns list of popular locations
+      parameters:
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          description: Amount of locations on one page
+          required: true
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Location'
+        400:
+          description: Bad request
+        500:
+          description: Internal server error
+    post:
+      tags:
+        - Locations
+      summary: Add location
+      description: Method creates new location
+      requestBody:
+        description: Create new location
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Location'
+        required: true
+      responses:
+        201:
+          description: Location created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Location'
+        400:
+          description: Bad request
+        422:
+          description: Not valid request
+        500:
+          description: Internal server error
+
+  /locations/{location_id}/posts:
+    get:
+      tags:
+        - Locations
+        - Posts
+      summary: Get posts from location
+      description: Method returns posts from location
+      parameters:
+        - name: location_id
+          in: path
+          description: Location id
+          required: true
+          schema:
+            type: string
+            example: "683477d0-e23a-4f9b-8bec-31896b654cb8"
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          description: Amount of locations on one page
+          required: true
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Post'
+        400:
+          description: Bad request
+        500:
+          description: Internal server error
+
+  /post/{post_id}/comments:
+    get:
+      tags:
+        - Comments
+        - Posts
+      summary: Get list of comments to a post
+      description: Method returns comments to a post in batches
+      parameters:
+        - name: post_id
+          in: path
+          description: Post that comments are requested for
+          required: true
+          schema:
+            type: string
+            format: uuid
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          description: Amount of comments on one page
+          required: true
+          schema:
+            type: integer
+            default: 10
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Comment'
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+    post:
+      tags:
+        - Comments
+      summary: Send comment
+      description: Method sends comment to a post
+      parameters:
+        - name: post_id
+          in: path
+          description: Post to which the comment is made
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Send new comment
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Comment'
+        required: true
+      responses:
+        201:
+          description: Comment created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        400:
+          description: Bad request
+        422:
+          description: Not valid request
+        500:
+          description: Internal server error
+
+  /post/{post_id}/reactions:
+    get:
+      tags:
+        - Reactions
+        - Posts
+      summary: Get list of reactions to a post
+      description: Method returns reactions to a post
+      parameters:
+        - name: post_id
+          in: path
+          description: Post that reactions are requested for
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Reaction'
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+    post:
+      tags:
+        - Reactions
+      summary: Set reaction
+      description: Method sets reactions to a post
+      parameters:
+        - name: post_id
+          in: path
+          description: Post that was reacted to
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        description: Set new reaction
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Reaction'
+        required: true
+      responses:
+        201:
+          description: Reaction has been set
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reaction'
+        400:
+          description: Bad request
+        422:
+          description: Not valid request
+        500:
+          description: Internal server error
+
+  /photo:
+    post:
+      tags:
+        - Photos
+      summary: Upload photo
+      description: Upload photo
+      requestBody:
+        description: Uploaded photo
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: string
+              format: binary
+      responses:
+        201:
+          description: Photo uploaded
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Photo'
+        400:
+          description: Bad request
+        500:
+          description: Internal server error
+
+  /photo/{path}:
+    get:
+      tags:
+        - Photos
+      summary: Download photo
+      description: Download photo
+      parameters:
+        - name: path
+          in: path
+          description: Path to photo
+          required: true
+          schema:
+            type: string
+      responses:
+        200:
+          description: Successful request
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        400:
+          description: Bad request
+        404:
+          description: Not found
+        500:
+          description: Internal server error
+
+components:
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "586fcad8-fbb2-4cf9-ba5d-ca04ee2e65f2"
+        name:
+          type: string
+          example: "Diddy"
+        gender:
+          type: string
+          enum:
+            - male
+            - female
+        date_of_birth:
+          type: string
+          format: date
+
+    Post:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "21812f1c-7fbd-408f-9622-2c84bda921ca"
+        author_id:
+          type: string
+          format: uuid
+          example: "58474d73-b3a8-4f16-9029-a9adff2cfd99"
+        location:
+          $ref: '#/components/schemas/Location'
+        content:
+          $ref: '#/components/schemas/PostContent'
+
+    PostContent:
+      type: object
+      properties:
+        text:
+          type: string
+          example: "I am very glad to visit this beautiful place!"
+        images:
+          type: array
+          description: "Photos URLs"
+          items:
+            type: string
+            example: "https://example.com/photo/9a0364b9.jpg"
+
+    Location:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "683477d0-e23a-4f9b-8bec-31896b654cb8"
+        name:
+          type: string
+          example: "Lake Baikal"
+        description:
+          type: string
+          example: "The deepest lake in the world"
+        latitude:
+          type: number
+          format: float
+          example: 54.169945
+        longitude:
+          type: number
+          format: float
+          example: 108.945864
+
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "b024aa79-a8aa-4536-a09f-0d5aba74a97b"
+        author_id:
+          type: string
+          format: uuid
+          example: "18021237-7ab5-4814-b7dd-cedf101b0bb7"
+        body:
+          type: string
+          example: "Brilliant place!"
+
+    Reaction:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "4e4eb14d-7356-4767-827d-f9c3e2acfdf5"
+        post_id:
+          type: string
+          format: uuid
+          example: "21812f1c-7fbd-408f-9622-2c84bda921ca"
+        reaction_type:
+          type: integer
+          example: 100
+
+    Photo:
+      type: object
+      properties:
+        url:
+          type: string
+          description: "Photo URL"
+          example: "https://example.com/photo/9a0364b9.jpg"
