@@ -87,3 +87,93 @@ id(16b) + post_id(16b) + author_id(16b) + body(300b) + created_at(8b) = 356b
  - **read**
    - RPS = 10 000 000 * 100 / 86400 = 11574
    - Traffic = 11574 * 356b = 4.12 Mb/s
+
+### Оценка дисков
+#### Посты
+###### Медиа
+Traffic = 1.2 + 17.36 = 18560 Mb/s <br>
+IOPS = 231 + 3472 = 3703 <br>
+Capacity = 1.2 Gb * 86400 * 365 = 37843.2 Tb
+- **HDD**
+  - Disks_for_capacity = 37843.2 / 32 = 1182.6
+  - Disks_for_throughput = 18560 / 100 = 185.6
+  - Disks_for_iops = 3703 / 100 = 37.03
+  - Disks = max(ceil(1182.6), ceil(185.6), ceil(37.03)) = 1183
+- **SSD (SATA)**
+  - Disks_for_capacity = 37843.2 / 100 = 378.4
+  - Disks_for_throughput = 18560 / 500 = 37.1
+  - Disks_for_iops = 3703 / 1000 = 3.7
+  - Disks = max(ceil(378.4), ceil(37.1), ceil(3.7)) = 379 
+- **SSD (nVME)**
+  - Disks_for_capacity = 37843.2 / 30 = 1261.4
+  - Disks_for_throughput = 18.56 / 3 = 6.2 
+  - Disks_for_iops = 3703 / 10000 = 0.37
+  - Disks = max(ceil(1261.4), ceil(6.2), ceil(0.37)) = 1262
+
+Итог: для хранения медиа постов оптимальным будет выбор SSD (SATA) (379 x 100Tb)
+
+###### Метаинформация
+Traffic = 286.44 Kb/s + 4.31 Mb/s = 4.6 Mb/s  <br>
+IOPS = 231 + 3472 = 3703 <br>
+Capacity = 286.44 Kb * 86400 * 365 = 9.03 Tb
+- **HDD**
+  - Disks_for_capacity = 9.03 / 3  = 3.01
+  - Disks_for_throughput = 4.6 / 100 = 0.05
+  - Disks_for_iops = 3703 / 100 = 37.03
+  - Disks = max(ceil(3.01), ceil(0.04), ceil(37.03)) = 38
+- **SSD (SATA)**
+  - Disks_for_capacity = 9.03 / 3 = 3.01
+  - Disks_for_throughput = 4.6 / 500 = 0.01
+  - Disks_for_iops = 3703 / 1000 = 3.7
+  - Disks = max(ceil(3.01), ceil(0.01), ceil(3.7)) = 4
+- **SSD (nVME)**
+  - Disks_for_capacity = 9.03 / 10 = 0.9
+  - Disks_for_throughput = 4.6 / 3000 = 0.002
+  - Disks_for_iops = 3703 / 10000 = 0.37
+  - Disks = max(ceil(0.9), ceil(0.002), ceil(0.37)) = 1
+
+Итог: для хранения метаинформации постов оптимальным будет выбор SSD (SATA) (4 x 3Tb)
+
+#### Реакции
+Traffic = 46.28 + 194.432 = 240.7 Kb/s <br>
+IOPS = 1157 + 3472 = 4629 <br>
+Capacity = 46.28 * 86400 * 365 = 1.5 Tb
+- **HDD**
+  - Disks_for_capacity = 1.5 / 2 = 0.75
+  - Disks_for_throughput = 240.7 Kb/s / 100 Mb/s = 0.002
+  - Disks_for_iops = 4629 / 100 = 46.3
+  - Disks = max(ceil(0.75), ceil(0.002), ceil(46.3)) = 47
+- **SSD (SATA)**
+  - Disks_for_capacity = 1.5 / 2 = 0.75
+  - Disks_for_throughput = 240.7 Kb/s / 500 Mb/s = 0.0004
+  - Disks_for_iops = 4629 / 1000 = 4.6
+  - Disks = max(ceil(0.75), ceil(0.0004), ceil(4.6)) = 5
+- **SSD (nVME)**
+  - Disks_for_capacity = 1.5 / 2 = 0.75
+  - Disks_for_throughput = 240.7 Kb/s / 3 Gb/s =  0.00008
+  - Disks_for_iops = 4629 / 10000 = 0.46 
+  - Disks = max(ceil(0.75), ceil(0.00008), ceil(0.46)) = 1
+
+Итог: для хранения реакций оптимальным будет выбор SSD (nVME) (1 x 2Tb)
+
+#### Комментарии
+Traffic = 206.124 Kb/s + 4.12 Mb/s = 4.33 Mb/s <br>
+IOPS = 579 + 11574 = 12153 <br>
+Capacity = 206.124 Kb * 86400 * 365 = 6.5 Tb
+- **HDD**
+  - Disks_for_capacity = 6.5 / 2 = 3.25
+  - Disks_for_throughput = 4.33 Mb/s / 100 = 0.04 
+  - Disks_for_iops = 12153 / 100 = 121.53
+  - Disks = max(ceil(3.25), ceil(0.04), ceil(121.53)) = 122
+- **SSD (SATA)**
+  - Disks_for_capacity = 6.5 / 2 = 3.25
+  - Disks_for_throughput = 4.33 Mb/s / 500 = 0.009
+  - Disks_for_iops = 12153 / 1000 = 12.15
+  - Disks = max(ceil(3.25), ceil(0.009), ceil(12.15)) = 13
+- **SSD (nVME)**
+  - Disks_for_capacity = 6.5 / 4 = 1.63
+  - Disks_for_throughput = 4.33 Mb/s / 3 Gb/s = 0.001
+  - Disks_for_iops = 12153 / 10000 = 1.22
+  - Disks = max(ceil(1.63), ceil(0.001), ceil(1.22)) = 2
+
+Итог: для хранения комментариев оптимальным будет выбор SSD (nVME) (2 x 4Tb)

@@ -1,0 +1,9 @@
+// DB type: relational (PostgreSQL)
+
+Table reactions {
+  id uuid [primary key]
+  post_id uuid
+  author_id uuid
+  type integer
+  created_at timestamp
+}
