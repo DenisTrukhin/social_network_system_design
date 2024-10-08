@@ -1,0 +1,10 @@
+// DB type: relational (PostgreSQL)
+
+Table comments {
+  id uuid [primary key]
+  post_id uuid
+  reply_to uuid
+  author_id uuid
+  text text
+  created_at timestamp
+}

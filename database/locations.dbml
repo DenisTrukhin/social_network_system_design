@@ -1,0 +1,10 @@
+// DB type: relational (PostgreSQL)
+
+Table locations {
+  id uuid [primary key]
+  name varchar
+  description text
+  latitude float
+  longitude float
+  created_at timestamp
+}

@@ -1,0 +1,15 @@
+// DB type: relational (PostgreSQL)
+
+Table users {
+  id uuid [primary key]
+  name varchar
+  gender varchar
+  date_of_birth date
+  created_at timestamp
+}
+
+Table follows {
+  following_user_id integer
+  followed_user_id integer
+  created_at timestamp
+}

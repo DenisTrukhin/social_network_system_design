@@ -1,0 +1,5 @@
+// DB type: blob store (S3)
+
+Table content_storage {
+  content binary
+}
