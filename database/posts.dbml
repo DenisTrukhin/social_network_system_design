@@ -1,0 +1,17 @@
+// DB type: relational (PostgreSQL)
+
+Table posts {
+  id uuid [primary key]
+  author_id uuid
+  location_id uuid
+  text text [note: 'Content of the post']
+  created_at timestamp
+}
+
+Table photos {
+  id uuid [primary key]
+  post_id uuid
+  url varchar
+  created_at timestamp
+}
+
