@@ -69,7 +69,7 @@ paths:
           description: Internal server error
 
 
-  /users/{user_id}/subscription:
+  /users/{user_id}/subscriptions:
     post:
       tags:
         - Users
@@ -305,7 +305,7 @@ paths:
         500:
           description: Internal server error
 
-  /post/{post_id}/comments:
+  /posts/{post_id}/comments:
     get:
       tags:
         - Comments
@@ -383,7 +383,7 @@ paths:
         500:
           description: Internal server error
 
-  /post/{post_id}/reactions:
+  /posts/{post_id}/reactions:
     get:
       tags:
         - Reactions
@@ -398,6 +398,20 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: page
+          in: query
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            default: 1
+        - name: per_page
+          in: query
+          description: Amount of comments on one page
+          required: true
+          schema:
+            type: integer
+            default: 100
       responses:
         200:
           description: Successful request
@@ -447,7 +461,7 @@ paths:
         500:
           description: Internal server error
 
-  /photo:
+  /photos:
     post:
       tags:
         - Photos
@@ -473,7 +487,7 @@ paths:
         500:
           description: Internal server error
 
-  /photo/{path}:
+  /photos/{path}:
     get:
       tags:
         - Photos
