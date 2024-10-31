@@ -1,4 +1,10 @@
 // DB type: relational (PostgreSQL)
+// Replication:
+// - master-slave (async)
+// - replication factor 3
+//
+// Sharding:
+// - key based by post_id
 
 Table reactions {
   id uuid [primary key]

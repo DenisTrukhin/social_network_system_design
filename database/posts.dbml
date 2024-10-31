@@ -1,4 +1,10 @@
 // DB type: relational (PostgreSQL)
+// Replication:
+// - master-slave (async)
+// - replication factor 3
+//
+// Sharding:
+// - key based by author_id
 
 Table posts {
   id uuid [primary key]
@@ -7,6 +13,9 @@ Table posts {
   text text [note: 'Content of the post']
   created_at timestamp
 }
+
+// Sharding:
+// - key based by post_id
 
 Table photos {
   id uuid [primary key]

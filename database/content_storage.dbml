@@ -1,4 +1,10 @@
 // DB type: blob store (S3)
+// Replication:
+// - master-master (async)
+// - replication factor 2
+//
+// Sharding:
+// - geo based
 
 Table content_storage {
   content binary
