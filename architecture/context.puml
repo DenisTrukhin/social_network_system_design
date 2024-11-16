@@ -1,0 +1,76 @@
+@startuml C4_Elements
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "User")
+Container(gateway, "API gateway", "Go", "Requests proxy, load balancer")
+Container(cdn, "CDN", "", "Gives media content")
+
+ContainerQueue(eventsQueue, "Events queue", "RabbitMQ", "Message queue for posts, comments and reactions events")
+
+System_Boundary(reactionsSystem, "Reactions service") {
+  Container(reactions, "Reactions service", "Go", "Reactions management")
+  ContainerDb(reactionsDb, "Reactions DB", "PgSQL", "Stores reactions")
+  Rel(reactions, reactionsDb, "")
+  Rel(reactions, eventsQueue, "Publishes reactions events  (Transactional outbox)", "AMQP")
+}
+
+System_Boundary(commentsSystem, "Comments service") {
+  Container(comments, "Comments service", "Go", "Comments management")
+  ContainerDb(commentsDb, "Comments DB", "PgSQL", "Stores comments")
+  Rel(comments, commentsDb, "")
+  Rel(comments, eventsQueue, "Publishes comments events (Transactional outbox)", "AMQP")
+}
+
+System_Boundary(subscriptionsSystem, "Subscriptions service") {
+  Container(subscriptions, "Subscriptions service", "Go", "Subscriptions management")
+  ContainerDb(subscriptionsDb, "Subscriptions DB", "PgSQL", "Stores subscriptions")
+  Rel(subscriptions, subscriptionsDb, "")
+  Rel(subscriptions, eventsQueue, "Publishes subscriptions events", "AMQP")
+}
+
+System_Boundary(locationsSystem, "Locations service") {
+  Container(locations, "Locations service", "Go", "Locations management")
+  ContainerDb(locationsDb, "Locations DB", "PgSQL", "Stores locations")
+  Rel(locations, locationsDb, "")
+}
+
+System_Boundary(mediaSystem, "Media service") {
+  Container(media, "Media service", "Go", "Media management")
+  Container(mover, "Media mover", "Go", "Event driven job")
+  ContainerDb(mediaDb, "Media storage", "S3", "Stores media")
+  Rel(mover, mediaDb, "Moves media files from temporary bucket to a permanent and removes trash files", "S3")
+  Rel(media, mediaDb, "")
+}
+
+System_Boundary(postsSystem, "Posts service") {
+  Container(posts, "Posts service", "Go", "Posts management")
+  ContainerDb(postsDb, "Posts DB", "PgSQL", "Stores posts")
+  Rel(posts, postsDb, "")
+  Rel(posts, eventsQueue, "Publishes posts events (Transactional outbox)", "AMQP")
+  Rel(posts, locations, "Gets and creates locations", "HTTP")
+}
+
+System_Boundary(feedSystem, "Feed service") {
+  Container(feed, "Feed service", "Go", "Feed management")
+  ContainerDb(feedDb, "Feed storage", "Redis", "Stores pre-prepared feeds (key based by users and by locations)")
+  Rel(feed, feedDb, "")
+  Rel(feed, subscriptions, "Gets info about user subscriptions", "HTTP")
+  Rel(feed, locations, "Gets locations", "HTTP")
+  Rel(feed, posts, "Gets posts in case of cache miss", "HTTP")
+  Rel(feed, reactions, "Gets reactions in case of cache miss", "HTTP")
+  Rel(feed, comments, "Gets comments in case of cache miss", "HTTP")
+}
+
+Rel(user, gateway, "Creates and reads posts, comments, reactions", "HTTP")
+Rel(user, cdn, "Gets media", "HTTP")
+Rel(cdn, gateway, "Requests media in case of cache miss", "HTTP")
+
+Rel(gateway, reactions, "Creates reactions", "HTTP")
+Rel(gateway, comments, "Creates comments", "HTTP")
+Rel(gateway, media, "Uploads and downloads media", "HTTP")
+Rel(gateway, posts, "Gets and creates posts", "HTTP")
+Rel(gateway, subscriptions, "Gets and creates subscriptions", "HTTP")
+
+Rel(eventsQueue, mover, "Pushes events to trigger media mover", "AMQP")
+Rel(eventsQueue, feed, "Pushes posts, comments and reactions events ", "AMQP")
+@enduml
