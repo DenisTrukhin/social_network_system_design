@@ -207,4 +207,9 @@ Capacity = 206.124 Kb * 86400 * 365 = 6.5 Tb
  - Disks_per_host = 1
  - Replication_factor = 3 
  - Hosts = 2 / 1 = 2
- - Hosts_with_replication = 2 * 3 = 6 
+ - Hosts_with_replication = 2 * 3 = 6
+
+### Дизайн социальной сети
+<p align="center">
+  <img src="architecture/images/context.png" />
+</p>
